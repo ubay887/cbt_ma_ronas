@@ -1,0 +1,136 @@
+/* Small visual/accessibility refinements for the student login screen. */
+:root {
+  --cbt-primary: #0877b9;
+  --cbt-primary-hover: #06649d;
+  --cbt-ink: #183247;
+  --cbt-muted: #5f7180;
+  --cbt-line: #c7d5df;
+}
+
+body {
+  background-color: #e8f1f7;
+  color: var(--cbt-ink);
+}
+
+body::before {
+  background: rgba(11, 37, 54, 0.38);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 0;
+}
+
+.container-login100 {
+  min-height: 100vh;
+  padding: 32px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.wrap-login100 {
+  border-radius: 18px;
+  margin-top: 0;
+  max-width: 440px;
+  padding: 42px 40px 32px;
+  width: 100%;
+  box-shadow: 0 18px 48px rgba(9, 35, 54, 0.24);
+}
+
+.login100-form-title {
+  color: var(--cbt-ink);
+  font-size: 26px;
+  letter-spacing: -0.2px;
+}
+
+.login100-form-title + .login100-form-title {
+  font-family: Poppins-SemiBold;
+  font-size: 20px;
+}
+
+.login100-form > .p-b-20 {
+  color: var(--cbt-muted);
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.wrap-input100 {
+  border-bottom-color: var(--cbt-line);
+  margin-bottom: 32px;
+}
+
+.input100 {
+  color: var(--cbt-ink);
+  font-size: 16px;
+  height: 50px;
+}
+
+.input100:focus + .focus-input100::before,
+.has-val.input100 + .focus-input100::before {
+  background: var(--cbt-primary);
+}
+
+.input100:focus-visible {
+  outline: 3px solid rgba(8, 119, 185, 0.22);
+  outline-offset: 3px;
+}
+
+.btn-show-pass,
+.btn-show-pass:hover,
+.btn-show-pass.active {
+  color: var(--cbt-primary);
+}
+
+.wrap-login100-form-btn {
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(8, 119, 185, 0.2);
+}
+
+.login100-form-bgbtn {
+  background: var(--cbt-primary);
+  left: 0;
+  transition: background-color 160ms ease-out;
+  width: 100%;
+}
+
+.wrap-login100-form-btn:hover .login100-form-bgbtn {
+  background: var(--cbt-primary-hover);
+}
+
+.login100-form-btn {
+  font-size: 15px;
+  font-weight: 600;
+  height: 52px;
+  letter-spacing: 0.2px;
+  text-transform: none;
+}
+
+.login100-form-btn:focus-visible {
+  outline: 3px solid rgba(8, 119, 185, 0.35);
+  outline-offset: 3px;
+}
+
+@media (max-width: 576px) {
+  .container-login100 {
+    align-items: flex-start;
+    padding-top: 24px;
+  }
+
+  .wrap-login100 {
+    border-radius: 16px;
+    padding: 34px 24px 28px;
+  }
+
+  .login100-form-title {
+    font-size: 23px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated,
+  .login100-form-bgbtn {
+    animation: none !important;
+    transition: none !important;
+  }
+}
