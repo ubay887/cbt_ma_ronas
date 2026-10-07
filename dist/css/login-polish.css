@@ -66,14 +66,15 @@ body::before {
   height: 50px;
 }
 
+.input100:focus,
+.input100:focus-visible {
+  box-shadow: none;
+  outline: none;
+}
+
 .input100:focus + .focus-input100::before,
 .has-val.input100 + .focus-input100::before {
   background: var(--cbt-primary);
-}
-
-.input100:focus-visible {
-  outline: 3px solid rgba(8, 119, 185, 0.22);
-  outline-offset: 3px;
 }
 
 .btn-show-pass,

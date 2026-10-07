@@ -21,7 +21,7 @@ require("config/config.candy.php");
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="dist/css/util.css">
 	<link rel="stylesheet" type="text/css" href="dist/css/main.css">
-	<link rel="stylesheet" type="text/css" href="dist/css/login-polish.css">
+	<link rel="stylesheet" type="text/css" href="dist/css/login-polish.css?v=2">
 	<!--===============================================================================================-->
 	<link rel='stylesheet' href='<?php echo $homeurl; ?>/plugins/sweetalert2/dist/sweetalert2.min.css'>
 </head>
