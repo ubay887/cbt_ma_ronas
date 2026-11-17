@@ -784,6 +784,11 @@ $tglsekarang = time();
                     <?php
                     $ac = dekripsi($ac);
                     $id = dekripsi($id);
+                    $id = (int) $id;
+                    if ($id !== id_siswa_session()) {
+                        jump($homeurl);
+                        exit();
+                    }
                     $qcek = mysqli_query($koneksi, "select * from nilai where id_ujian='$ac' and id_siswa='$id'");
                     $cek = mysqli_num_rows($qcek);
                     if ($cek <> 0) :

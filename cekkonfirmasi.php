@@ -4,10 +4,13 @@ require("config/config.default.php");
 require("config/config.function.php");
 require("config/functions.crud.php");
 cek_session_siswa();
-$ac = enkripsi($_POST['idm']);
-$id_siswa = enkripsi($_POST['ids']);
-$idu = $_POST['idm'];
-$ids = $_POST['ids'];
+$idu = (int) $_POST['idm'];
+$ids = id_siswa_session();
+if (!siswa_boleh_memulai_ujian($koneksi, $ids, $idu)) {
+	tolak_akses_ujian();
+}
+$ac = enkripsi($idu);
+$id_siswa = enkripsi($ids);
 $query = mysqli_fetch_array(mysqli_query($koneksi, "SELECT * FROM ujian WHERE id_ujian='$idu'"));
 $idmapel = $query['id_mapel'];
 if ($query['token'] == 1) :

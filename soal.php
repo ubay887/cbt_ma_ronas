@@ -2,18 +2,18 @@
 require("config/config.default.php");
 require("config/config.function.php");
 require("config/functions.crud.php");
-$soalx = $_POST['soal'];
+$id_siswa = id_siswa_session();
+$soalx = isset($_POST['soal']) ? $_POST['soal'] : '';
 $soalx = dekripsi($soalx);
 $decoded = json_decode($soalx, true);
-$pengacak = $_POST['pengacak'];
+$pengacak = isset($_POST['pengacak']) ? $_POST['pengacak'] : '';
 $pengacak = explode(',', $pengacak);
-$pengacakpil = $_POST['pengacakpil'];
+$pengacakpil = isset($_POST['pengacakpil']) ? $_POST['pengacakpil'] : '';
 $pengacakpil = explode(',', $pengacakpil);
-$id_siswa = (isset($_SESSION['id_siswa'])) ? $_SESSION['id_siswa'] : 0;
-$ujiannya = dekripsi($_POST['ujian']);
+$ujiannya = dekripsi(isset($_POST['ujian']) ? $_POST['ujian'] : '');
 $mapel = json_decode($ujiannya, true);
 $pg = @$_POST['pg'];
-$ac = $mapel[0]['id_ujian'];
+$ac = isset($mapel[0]['id_ujian']) ? (int) $mapel[0]['id_ujian'] : 0;
 $id = @$_POST['id'];
 $audio = array('mp3', 'wav', 'ogg', 'MP3', 'WAV', 'OGG');
 $image = array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'JPG', 'JPEG', 'PNG', 'GIF', 'BMP');
@@ -23,8 +23,10 @@ $image = array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'JPG', 'JPEG', 'PNG', 'GIF', 
     $no_soal = $_POST['no_soal'];
     $no_prev = $no_soal - 1;
     $no_next = $no_soal + 1;
-    $id_mapel = $_POST['id_mapel'];
-    $id_siswa = $_POST['id_siswa'];
+    $id_mapel = (int) $_POST['id_mapel'];
+    if ($ac < 1 || $id_mapel < 1 || !siswa_mengerjakan_ujian($koneksi, $id_siswa, $ac, $id_mapel)) {
+        tolak_akses_ujian();
+    }
     $where2 = array(
         'id_siswa' => $id_siswa,
         'id_mapel' => $id_mapel,
@@ -43,6 +45,9 @@ $image = array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'JPG', 'JPEG', 'PNG', 'GIF', 
     $nosoal = $nomor;
     foreach ($decoded as $soal) {
         if ($soal['id_soal'] == $pengacak[$nosoal]) {
+            if (!siswa_memiliki_soal_ujian($koneksi, $id_siswa, $ac, $id_mapel, (int) $soal['id_soal'])) {
+                tolak_akses_ujian();
+            }
             $jawab = fetch($koneksi, 'jawaban', array('id_siswa' => $id_siswa, 'id_mapel' => $id_mapel, 'id_soal' => $soal['id_soal'], 'id_ujian' => $ac));
     ?>
             <div class='box-body'>
@@ -606,29 +611,35 @@ $image = array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'JPG', 'JPEG', 'PNG', 'GIF', 
 <?php } ?>
 <?php
 if ($pg == 'jawab') {
-    $jenis = $_POST['jenis'];
+    $jenis = (int) $_POST['jenis'];
+    $id_ujian = (int) $_POST['idu'];
+    $id_mapel = (int) $_POST['id_mapel'];
+    $id_soal = (int) $_POST['id_soal'];
+    if (($jenis !== 1 && $jenis !== 2) || !siswa_memiliki_soal_ujian($koneksi, $id_siswa, $id_ujian, $id_mapel, $id_soal)) {
+        tolak_akses_ujian();
+    }
     $dataesai = array(
-        'id_ujian' => $_POST['idu'],
-        'id_mapel' => $_POST['id_mapel'],
-        'id_siswa' => $_POST['id_siswa'],
-        'id_soal' => $_POST['id_soal'],
-        'jenis' => $_POST['jenis'],
+        'id_ujian' => $id_ujian,
+        'id_mapel' => $id_mapel,
+        'id_siswa' => $id_siswa,
+        'id_soal' => $id_soal,
+        'jenis' => $jenis,
         'esai' => addslashes($_POST['jawaban'])
     );
     $data = array(
-        'id_ujian' => $_POST['idu'],
-        'id_mapel' => $_POST['id_mapel'],
-        'id_siswa' => $_POST['id_siswa'],
-        'id_soal' => $_POST['id_soal'],
-        'jenis' => $_POST['jenis'],
+        'id_ujian' => $id_ujian,
+        'id_mapel' => $id_mapel,
+        'id_siswa' => $id_siswa,
+        'id_soal' => $id_soal,
+        'jenis' => $jenis,
         'jawaban' => $_POST['jawaban'],
         'jawabx' => $_POST['jawabx']
     );
     $where = array(
-        'id_ujian' => $_POST['idu'],
-        'id_mapel' => $_POST['id_mapel'],
-        'id_siswa' => $_POST['id_siswa'],
-        'id_soal' => $_POST['id_soal'],
+        'id_ujian' => $id_ujian,
+        'id_mapel' => $id_mapel,
+        'id_siswa' => $id_siswa,
+        'id_soal' => $id_soal,
         'jenis' => $jenis
     );
     $cekjawaban = rowcount($koneksi, 'jawaban', $where);
@@ -647,11 +658,17 @@ if ($pg == 'jawab') {
     }
     echo $exec;
 } elseif ($pg == 'ragu') {
+    $id_mapel = (int) $_POST['id_mapel'];
+    $id_soal = (int) $_POST['id_soal'];
+    $id_ujian = (int) $_POST['id_ujian'];
+    if (!siswa_memiliki_soal_ujian($koneksi, $id_siswa, $id_ujian, $id_mapel, $id_soal)) {
+        tolak_akses_ujian();
+    }
     $where = array(
-        'id_mapel' => $_POST['id_mapel'],
-        'id_siswa' => $_POST['id_siswa'],
-        'id_soal' => $_POST['id_soal'],
-        'id_ujian' => $_POST['id_ujian'],
+        'id_mapel' => $id_mapel,
+        'id_siswa' => $id_siswa,
+        'id_soal' => $id_soal,
+        'id_ujian' => $id_ujian,
         'jenis' => 1
     );
     $cekragu = fetch($koneksi, 'jawaban', $where);

@@ -205,6 +205,78 @@ function cek_session_siswa()
 		exit();
 	}
 }
+
+function id_siswa_session()
+{
+	cek_session_siswa();
+	return (int) $_SESSION['id_siswa'];
+}
+
+function tolak_akses_ujian()
+{
+	http_response_code(403);
+	echo 'Akses ujian tidak diizinkan';
+	exit();
+}
+
+function siswa_boleh_memulai_ujian($koneksi, $id_siswa, $id_ujian)
+{
+	$sql = "SELECT 1
+		FROM ujian u
+		INNER JOIN siswa s ON s.id_siswa = ?
+		WHERE u.id_ujian = ?
+		AND u.status = '1'
+		AND (u.level = s.level OR u.level = 'semua')
+		AND u.sesi = s.sesi
+		LIMIT 1";
+	$stmt = mysqli_prepare($koneksi, $sql);
+	if (!$stmt) {
+		return false;
+	}
+	mysqli_stmt_bind_param($stmt, 'ii', $id_siswa, $id_ujian);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_store_result($stmt);
+	$allowed = mysqli_stmt_num_rows($stmt) === 1;
+	mysqli_stmt_close($stmt);
+	return $allowed;
+}
+
+function siswa_mengerjakan_ujian($koneksi, $id_siswa, $id_ujian, $id_mapel)
+{
+	$sql = "SELECT 1 FROM nilai
+		WHERE id_siswa = ? AND id_ujian = ? AND id_mapel = ?
+		AND ujian_selesai IS NULL
+		LIMIT 1";
+	$stmt = mysqli_prepare($koneksi, $sql);
+	if (!$stmt) {
+		return false;
+	}
+	mysqli_stmt_bind_param($stmt, 'iii', $id_siswa, $id_ujian, $id_mapel);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_store_result($stmt);
+	$allowed = mysqli_stmt_num_rows($stmt) === 1;
+	mysqli_stmt_close($stmt);
+	return $allowed;
+}
+
+function siswa_memiliki_soal_ujian($koneksi, $id_siswa, $id_ujian, $id_mapel, $id_soal)
+{
+	$sql = "SELECT 1 FROM nilai
+		WHERE id_siswa = ? AND id_ujian = ? AND id_mapel = ?
+		AND ujian_selesai IS NULL
+		AND FIND_IN_SET(?, id_soal) > 0
+		LIMIT 1";
+	$stmt = mysqli_prepare($koneksi, $sql);
+	if (!$stmt) {
+		return false;
+	}
+	mysqli_stmt_bind_param($stmt, 'iiii', $id_siswa, $id_ujian, $id_mapel, $id_soal);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_store_result($stmt);
+	$allowed = mysqli_stmt_num_rows($stmt) === 1;
+	mysqli_stmt_close($stmt);
+	return $allowed;
+}
 function cek_session_superadmin()
 {
 

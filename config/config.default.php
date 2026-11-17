@@ -1,4 +1,14 @@
 <?php
+if (PHP_SAPI !== 'cli') {
+	$isHttps = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+	session_set_cookie_params(array(
+		'lifetime' => 0,
+		'path' => '/',
+		'secure' => $isHttps,
+		'httponly' => true,
+		'samesite' => 'Lax'
+	));
+}
 session_start();
 error_reporting(0);
 (isset($_SESSION['id_user'])) ? $id_user = $_SESSION['id_user'] : $id_user = 0;

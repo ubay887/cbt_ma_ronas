@@ -3,9 +3,12 @@ require("config/config.default.php");
 require("config/config.function.php");
 require("config/functions.crud.php");
 cek_session_siswa();
-$idm = $_POST['id_mapel'];
-$ids = $_POST['id_siswa'];
-$idu = $_POST['id_ujian'];
+$idm = (int) $_POST['id_mapel'];
+$ids = id_siswa_session();
+$idu = (int) $_POST['id_ujian'];
+if (!siswa_mengerjakan_ujian($koneksi, $ids, $idu, $idm)) {
+    tolak_akses_ujian();
+}
 $where = array(
     'id_mapel' => $idm,
     'id_siswa' => $ids,

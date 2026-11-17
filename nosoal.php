@@ -3,9 +3,12 @@ require "config/config.default.php";
 require "config/config.function.php";
 require "config/functions.crud.php";
 cek_session_siswa();
-$id_mapel = $_POST['id_mapel'];
-$id_siswa = $_POST['id_siswa'];
-$id_ujian = $_POST['idu'];
+$id_mapel = (int) $_POST['id_mapel'];
+$id_siswa = id_siswa_session();
+$id_ujian = (int) $_POST['idu'];
+if (!siswa_mengerjakan_ujian($koneksi, $id_siswa, $id_ujian, $id_mapel)) {
+    tolak_akses_ujian();
+}
 $pengacak = $_POST['pengacak'];
 $pengacak = explode(',', $pengacak);
 $pengacakpil = $_POST['pengacakpil'];

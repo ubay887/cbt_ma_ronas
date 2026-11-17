@@ -3,8 +3,11 @@ require("config/config.default.php");
 require("config/config.function.php");
 require("config/functions.crud.php");
 cek_session_siswa();
-$ac = $_POST['idm'];
-$id_siswa = $_POST['ids'];
+$ac = (int) $_POST['idm'];
+$id_siswa = id_siswa_session();
+if (!siswa_boleh_memulai_ujian($koneksi, $id_siswa, $ac)) {
+	tolak_akses_ujian();
+}
 $query = mysqli_fetch_array(mysqli_query($koneksi, "SELECT * FROM ujian WHERE id_ujian='$ac'"));
 $idmapel = $query['id_mapel'];
 $namamapel = mysqli_fetch_array(mysqli_query($koneksi, "SELECT * FROM ujian WHERE id_ujian='$ac'"));
